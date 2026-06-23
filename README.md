@@ -4,16 +4,16 @@ This repository contains the Terraform configuration to deploy a standard GKE cl
 
 ## Architecture Diagram
 
-![GKE Shared VPC Architecture](file:///usr/local/google/home/leafye/leaf-gke-terraform/assets/gke_shared_vpc_topology.png)
+![GKE Shared VPC Architecture](assets/gke_shared_vpc_topology.png)
 
 ## File Structure
 
-- [providers.tf](file:///usr/local/google/home/leafye/leaf-gke-terraform/providers.tf) - Defines the required terraform and Google providers.
-- [variables.tf](file:///usr/local/google/home/leafye/leaf-gke-terraform/variables.tf) - Configures input variables, including CIDR blocks, projects, and regions.
-- [vpc.tf](file:///usr/local/google/home/leafye/leaf-gke-terraform/vpc.tf) - Provisions the host project's Shared VPC network, subnet, and enables Shared VPC.
-- [iam.tf](file:///usr/local/google/home/leafye/leaf-gke-terraform/iam.tf) - Configures the host project IAM role bindings required for the service project GKE resources.
-- [gke.tf](file:///usr/local/google/home/leafye/leaf-gke-terraform/gke.tf) - Provisions the GKE cluster and node pools in the service project.
-- [outputs.tf](file:///usr/local/google/home/leafye/leaf-gke-terraform/outputs.tf) - Lists deployment outputs like cluster endpoint and name.
+- [providers.tf](providers.tf) - Defines the required terraform and Google providers.
+- [variables.tf](variables.tf) - Configures input variables, including CIDR blocks, projects, and regions.
+- [vpc.tf](vpc.tf) - Provisions the host project's Shared VPC network, subnet, and enables Shared VPC.
+- [iam.tf](iam.tf) - Configures the host project IAM role bindings required for the service project GKE resources.
+- [gke.tf](gke.tf) - Provisions the GKE cluster and node pools in the service project.
+- [outputs.tf](outputs.tf) - Lists deployment outputs like cluster endpoint and name.
 
 ## Configuration Details
 
