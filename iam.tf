@@ -45,7 +45,6 @@ resource "google_compute_subnetwork_iam_member" "apis_subnet_network_user" {
 }
 
 # 4. Grant compute.securityAdmin role to GKE Service Agent on the Host Project
-# This is required for GKE to automatically create and manage VPC firewall rules in the Host Project.
 resource "google_project_iam_member" "gke_host_security_admin" {
   project = var.host_project_id
   role    = "roles/compute.securityAdmin"
@@ -84,4 +83,66 @@ resource "google_compute_subnetwork_iam_member" "apis_subnet_2_network_user" {
   ]
 }
 
+# 7. Grant compute.networkUser and container.hostServiceAgentUser to Multi-Cluster Ingress Service Agent on Host Subnets & Project
+resource "google_project_iam_member" "mci_host_service_agent" {
+  project = var.host_project_id
+  role    = "roles/container.hostServiceAgentUser"
+  member  = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com"
 
+  depends_on = [
+    google_project_service.service_container
+  ]
+}
+
+resource "google_compute_subnetwork_iam_member" "mci_subnet_network_user" {
+  project    = var.host_project_id
+  region     = var.region
+  subnetwork = google_compute_subnetwork.gke_subnet.name
+  role       = "roles/compute.networkUser"
+  member     = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com"
+
+  depends_on = [
+    google_project_service.service_container,
+    google_compute_subnetwork.gke_subnet
+  ]
+}
+
+resource "google_compute_subnetwork_iam_member" "mci_subnet_2_network_user" {
+  project    = var.host_project_id
+  region     = var.region_2
+  subnetwork = google_compute_subnetwork.gke_subnet_2.name
+  role       = "roles/compute.networkUser"
+  member     = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com"
+
+  depends_on = [
+    google_project_service.service_container,
+    google_compute_subnetwork.gke_subnet_2
+  ]
+}
+
+# 8. Grant compute.networkUser to GKE Hub Service Agent on Host Subnets
+resource "google_compute_subnetwork_iam_member" "gkehub_subnet_network_user" {
+  project    = var.host_project_id
+  region     = var.region
+  subnetwork = google_compute_subnetwork.gke_subnet.name
+  role       = "roles/compute.networkUser"
+  member     = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
+
+  depends_on = [
+    google_project_service.service_container,
+    google_compute_subnetwork.gke_subnet
+  ]
+}
+
+resource "google_compute_subnetwork_iam_member" "gkehub_subnet_2_network_user" {
+  project    = var.host_project_id
+  region     = var.region_2
+  subnetwork = google_compute_subnetwork.gke_subnet_2.name
+  role       = "roles/compute.networkUser"
+  member     = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
+
+  depends_on = [
+    google_project_service.service_container,
+    google_compute_subnetwork.gke_subnet_2
+  ]
+}

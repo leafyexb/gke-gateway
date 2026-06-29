@@ -1,0 +1,25 @@
+kind: HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1
+metadata:
+  name: internal-store-route
+  namespace: store
+  labels:
+    gateway: cross-regional-internal
+spec:
+  parentRefs:
+  - kind: Gateway
+    name: internal-cross-region-gateway
+  rules:
+  - backendRefs:
+    # Primary: 100% of normal traffic goes to store-central-1
+    - name: store-central-1
+      group: net.gke.io
+      kind: ServiceImport
+      port: 8080
+      weight: 1
+    # Backup: Standby backend; only used if store-central-1 fails health checks
+    - name: store-west-1
+      group: net.gke.io
+      kind: ServiceImport
+      port: 8080
+      weight: 0

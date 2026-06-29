@@ -48,7 +48,7 @@ resource "google_container_cluster" "primary" {
   subnetwork = "projects/${var.host_project_id}/regions/${var.region}/subnetworks/${var.subnet_name}"
 
   ip_allocation_policy {
-    cluster_secondary_range_name  = "gke-pods"
+    cluster_secondary_range_name = "gke-pods"
   }
 
   # Security Hardening Best Practices
@@ -132,7 +132,7 @@ resource "google_container_cluster" "secondary" {
   subnetwork = "projects/${var.host_project_id}/regions/${var.region_2}/subnetworks/${var.subnet_name_2}"
 
   ip_allocation_policy {
-    cluster_secondary_range_name  = "gke-pods"
+    cluster_secondary_range_name = "gke-pods"
   }
 
   # Security Hardening Best Practices
@@ -145,7 +145,7 @@ resource "google_container_cluster" "secondary" {
   # Private Cluster Configuration
   private_cluster_config {
     enable_private_nodes    = true
-    enable_private_endpoint = false # Access control plane over public internet with authorized networks
+    enable_private_endpoint = false           # Access control plane over public internet with authorized networks
     master_ipv4_cidr_block  = "172.16.1.0/28" # Must not overlap with the first cluster's master CIDR (172.16.0.0/28)
   }
 

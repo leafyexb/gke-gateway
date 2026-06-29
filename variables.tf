@@ -54,7 +54,7 @@ variable "region_2" {
 variable "subnet_name_2" {
   type        = string
   description = "The name of the second subnet to create/use for GKE nodes in us-west1."
-  default     = "gke-subnet-2"
+  default     = "gke-subnet"
 }
 
 variable "node_cidr_2" {

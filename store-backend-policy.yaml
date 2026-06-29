@@ -1,0 +1,18 @@
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: store-backend-preference-policy
+  namespace: store
+spec:
+  targetRef:
+    group: "net.gke.io"
+    kind: "ServiceImport"
+    name: "store"
+  default:
+    scopes:
+    - selector:
+        gke.io/region: "us-central1"
+      backendPreference: PREFERRED
+    - selector:
+        gke.io/region: "us-west1"
+      backendPreference: DEFAULT

@@ -1,0 +1,17 @@
+kind: HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1
+metadata:
+  name: store-route-preferred
+  namespace: store
+  labels:
+    gateway: cross-regional-internal
+spec:
+  parentRefs:
+  - kind: Gateway
+    name: store-gateway-preferred
+  rules:
+  - backendRefs:
+    - name: store
+      group: net.gke.io
+      kind: ServiceImport
+      port: 8080

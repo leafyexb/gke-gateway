@@ -152,7 +152,7 @@ resource "google_compute_network_firewall_policy" "iap_policy" {
 resource "google_compute_network_firewall_policy_rule" "allow_iap_ssh" {
   project         = var.host_project_id
   firewall_policy = google_compute_network_firewall_policy.iap_policy.name
-  
+
   description = "Allow ingress SSH from Identity-Aware Proxy to all instances"
   priority    = 1000
   action      = "allow"
