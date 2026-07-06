@@ -21,7 +21,7 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: store-central-1 # Specific to this cluster
+  name: store-west-1
   namespace: store
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
@@ -35,5 +35,5 @@ spec:
 kind: ServiceExport
 apiVersion: net.gke.io/v1
 metadata:
-  name: store-central-1 # Exporting the region-specific service
+  name: store-west-1
   namespace: store

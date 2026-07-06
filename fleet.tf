@@ -83,3 +83,67 @@ resource "google_gke_hub_feature" "mci_feature" {
     google_gke_hub_membership.secondary_membership
   ]
 }
+
+# Enable GKE Hub Config Management (Config Sync) API in the Service Project
+resource "google_project_service" "service_configmanagement" {
+  project            = var.service_project_id
+  service            = "anthosconfigmanagement.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable Config Management (Config Sync) feature in Fleet
+resource "google_gke_hub_feature" "configmanagement_feature" {
+  provider = google-beta
+  project  = var.service_project_id
+  name     = "configmanagement"
+  location = "global"
+
+  depends_on = [
+    google_project_service.service_configmanagement,
+    google_gke_hub_membership.primary_membership,
+    google_gke_hub_membership.secondary_membership
+  ]
+}
+
+# Configure Config Sync feature membership for Primary Cluster (Config Cluster)
+resource "google_gke_hub_feature_membership" "configsync_primary" {
+  provider   = google-beta
+  project    = var.service_project_id
+  location   = "global"
+  feature    = google_gke_hub_feature.configmanagement_feature.name
+  membership = google_gke_hub_membership.primary_membership.membership_id
+
+  configmanagement {
+    config_sync {
+      enabled = true
+      git {
+        sync_repo   = var.gitops_repo_url
+        sync_branch = var.gitops_repo_branch
+        secret_type = "none"
+        policy_dir  = "gitops/clusters/primary"
+      }
+    }
+  }
+}
+
+# Configure Config Sync feature membership for Secondary Cluster
+resource "google_gke_hub_feature_membership" "configsync_secondary" {
+  provider   = google-beta
+  project    = var.service_project_id
+  location   = "global"
+  feature    = google_gke_hub_feature.configmanagement_feature.name
+  membership = google_gke_hub_membership.secondary_membership.membership_id
+
+  configmanagement {
+    config_sync {
+      enabled = true
+      git {
+        sync_repo   = var.gitops_repo_url
+        sync_branch = var.gitops_repo_branch
+        secret_type = "none"
+        policy_dir  = "gitops/clusters/secondary"
+      }
+    }
+  }
+}
+

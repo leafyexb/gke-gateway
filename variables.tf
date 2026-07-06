@@ -69,3 +69,16 @@ variable "pod_cidr_2" {
   default     = "240.1.0.0/16"
 }
 
+variable "gitops_repo_url" {
+  type        = string
+  description = "The URL of the Git repository for GKE Config Sync GitOps."
+  default     = "https://github.com/leafyexb/gke-gateway.git"
+}
+
+variable "gitops_repo_branch" {
+  type        = string
+  description = "The branch of the Git repository for GKE Config Sync GitOps."
+  default     = "main"
+}
+
+

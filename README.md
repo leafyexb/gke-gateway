@@ -4,7 +4,7 @@ This repository contains the Terraform configurations and Kubernetes manifests t
 
 ## Architecture Diagram
 
-![GKE Shared VPC Architecture](assets/gke_shared_vpc_topology.png)
+![GKE Shared VPC Architecture][def]
 
 ## GKE & Infrastructure Overview
 
@@ -26,20 +26,32 @@ This repository contains the Terraform configurations and Kubernetes manifests t
 - [vpc.tf](vpc.tf) - Provisions Shared VPC, subnets, proxy-only subnets for regional ILBs, Cloud NAT gateways, and firewall rules in the Host Project.
 - [iam.tf](iam.tf) - Configures IAM permissions for cross-project Shared VPC attachment and GKE service agents.
 - [gke.tf](gke.tf) - Deploys primary and secondary GKE clusters and custom node pools in the Service Project.
-- [fleet.tf](fleet.tf) - Registers GKE clusters to GKE Hub Fleet and enables MCS and MCI features.
-- [workloads.tf](workloads.tf) - Deploys namespaces, store application workloads, ServiceExports, and Gateway API routing.
+- [fleet.tf](fleet.tf) - Registers GKE clusters to GKE Hub Fleet and enables MCS, MCI, and Config Sync (GitOps) features.
+- [workloads.tf](workloads.tf) - References GitOps managed store workloads and legacy routing.
 - [custom_lb_option1a.tf](custom_lb_option1a.tf) - Optional Terraform configuration for deploying an internal application load balancer targeting GKE Network Endpoint Groups (NEGs).
 - [outputs.tf](outputs.tf) - Exports cluster endpoints, names, and Fleet membership details.
 
-### Kubernetes Manifests & Routing
-- [store-deployment.yaml](store-deployment.yaml) - Sample store microservice application deployment.
-- [store-service.yaml](store-service.yaml) - Standard Kubernetes cluster-local Service definition.
-- [store-service-export-central1.yaml](store-service-export-central1.yaml) & [store-service-export-west1.yaml](store-service-export-west1.yaml) - Multi-Cluster ServiceExports for cross-region Fleet discovery.
-- [internal-cross-region-gateway.yaml](internal-cross-region-gateway.yaml) & [store-gateway-preferred.yaml](store-gateway-preferred.yaml) - Gateway API specifications for multi-cluster ingress traffic.
-- [internal-store-route.yaml](internal-store-route.yaml) & [store-route-preferred.yaml](store-route-preferred.yaml) - HTTPRoute rules directing external/internal traffic to store backends.
-- [store-backend-policy.yaml](store-backend-policy.yaml) - GCPBackendPolicy defining load balancing and health check policies.
+### GitOps & Kustomize Directory Layout (`gitops/`)
+All `store-*` manifests are managed using **GKE Config Sync** and structured via **Kustomize**:
+- `gitops/base/`
+  - `kustomization.yaml` - Base Kustomize manifest.
+  - `namespace.yaml` - Declarative definition for `store` namespace.
+  - `store-deployment.yaml` - Store microservice application deployment.
+  - `store-service.yaml` - Standard cluster-local Service definition.
+- `gitops/clusters/primary/`
+  - `kustomization.yaml` - Primary cluster Kustomize overlay (references `../../base`).
+  - `store-service-export-central1.yaml` - Multi-Cluster ServiceExports for `us-central1`.
+  - `store-gateway-preferred.yaml` - Cross-region Internal Gateway API specification.
+  - `store-route-preferred.yaml` - HTTPRoute directing traffic to store backends.
+  - `store-backend-policy.yaml` - GCPBackendPolicy defining region backend preference (`us-central1` PREFERRED, `us-west1` DEFAULT).
+- `gitops/clusters/secondary/`
+  - `kustomization.yaml` - Secondary cluster Kustomize overlay (references `../../base`).
+  - `store-service-export-west1.yaml` - Multi-Cluster ServiceExports for `us-west1`.
+
+### Utility Manifests
 - [ip-masq-agent-config.yaml](ip-masq-agent-config.yaml) - IP masquerade agent configuration for custom pod egress routing.
 - [ssh-client-deployment.yaml](ssh-client-deployment.yaml) - Utility debugging client deployment.
+
 
 ## Prerequisites
 
@@ -71,3 +83,6 @@ Before running Terraform:
    terraform apply
    ```
 
+
+
+[def]: assets/gke_shared_vpc_topology.png
