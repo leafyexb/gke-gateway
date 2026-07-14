@@ -4,6 +4,4 @@ kind: Kustomization
 resources:
 - ../../base/deployment
 - store-service-export-central1.yaml
-- store-gateway-preferred.yaml
-- store-route-preferred.yaml
-- store-backend-policy.yaml
+
