@@ -24,11 +24,6 @@ resource "google_project_service" "service_trafficdirector" {
   disable_on_destroy = false
 }
 
-resource "google_project_service" "service_anthos" {
-  project            = var.service_project_id
-  service            = "anthos.googleapis.com"
-  disable_on_destroy = false
-}
 
 
 
