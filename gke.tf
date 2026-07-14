@@ -80,7 +80,8 @@ resource "google_container_cluster" "primary" {
     google_project_iam_member.gke_host_service_agent,
     google_project_iam_member.gke_host_security_admin,
     google_compute_subnetwork_iam_member.gke_subnet_network_user,
-    google_compute_subnetwork_iam_member.apis_subnet_network_user
+    google_compute_subnetwork_iam_member.apis_subnet_network_user,
+    google_compute_shared_vpc_service_project.service
   ]
 }
 
@@ -168,7 +169,8 @@ resource "google_container_cluster" "secondary" {
     google_project_iam_member.gke_host_service_agent,
     google_project_iam_member.gke_host_security_admin,
     google_compute_subnetwork_iam_member.gke_subnet_2_network_user,
-    google_compute_subnetwork_iam_member.apis_subnet_2_network_user
+    google_compute_subnetwork_iam_member.apis_subnet_2_network_user,
+    google_compute_shared_vpc_service_project.service
   ]
 }
 
