@@ -1,9 +1,9 @@
 # ==============================================================================
 # Workloads & Routing Managed via GitOps (GKE Config Sync)
 # ==============================================================================
-# All store-* application manifests (Deployment, Service, ServiceExport, Gateway,
+# All store-* application manifests (Rollout, Service, ServiceExport, Gateway,
 # HTTPRoute, GCPBackendPolicy) have been migrated into GitOps configuration under:
-#   - gitops/base/               (Shared Namespace, Deployment, Service definitions)
+#   - gitops/base/               (Shared Namespace, Rollout, Service definitions)
 #   - gitops/clusters/primary/   (Primary Config Cluster manifests & Kustomization)
 #   - gitops/clusters/secondary/ (Secondary Cluster manifests & Kustomization)
 #

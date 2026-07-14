@@ -33,19 +33,20 @@ This repository contains the Terraform configurations and Kubernetes manifests t
 
 ### GitOps & Kustomize Directory Layout (`gitops/`)
 All `store-*` manifests are managed using **GKE Config Sync** and structured via **Kustomize**:
-- `gitops/base/`
-  - `kustomization.yaml` - Base Kustomize manifest.
-  - `namespace.yaml` - Declarative definition for `store` namespace.
-  - `store-deployment.yaml` - Store microservice application deployment.
-  - `store-service.yaml` - Standard cluster-local Service definition.
+- `gitops/base/common/` - Shared resources (namespace, service definitions).
+- `gitops/base/deployment/` - Standard deployment overlay.
+  - `store-deployment.yaml` - Store microservice deployment.
+- `gitops/base/rollout/` - Progressive delivery overlay.
+  - `store-rollout.yaml` - Argo Rollout canary specification.
+- `gitops/base/argo-rollouts/` - Controller configurations and manifests for Argo Rollouts.
 - `gitops/clusters/primary/`
-  - `kustomization.yaml` - Primary cluster Kustomize overlay (references `../../base`).
+  - `kustomization.yaml` - Primary cluster Kustomize overlay (references `../../base/deployment` or `../../base/rollout`).
   - `store-service-export-central1.yaml` - Multi-Cluster ServiceExports for `us-central1`.
   - `store-gateway-preferred.yaml` - Cross-region Internal Gateway API specification.
   - `store-route-preferred.yaml` - HTTPRoute directing traffic to store backends.
   - `store-backend-policy.yaml` - GCPBackendPolicy defining region backend preference (`us-central1` PREFERRED, `us-west1` DEFAULT).
 - `gitops/clusters/secondary/`
-  - `kustomization.yaml` - Secondary cluster Kustomize overlay (references `../../base`).
+  - `kustomization.yaml` - Secondary cluster Kustomize overlay (references `../../base/deployment` or `../../base/rollout`).
   - `store-service-export-west1.yaml` - Multi-Cluster ServiceExports for `us-west1`.
 
 ### Utility Manifests
