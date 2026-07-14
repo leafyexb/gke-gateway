@@ -173,3 +173,11 @@ resource "google_project_iam_member" "gkehub_host_network_viewer" {
   member  = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
 }
 
+# Grant compute.networkViewer role to Multi-Cluster Ingress Service Agent on the Host Project
+resource "google_project_iam_member" "mci_host_network_viewer" {
+  project = var.host_project_id
+  role    = "roles/compute.networkViewer"
+  member  = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com"
+}
+
+
