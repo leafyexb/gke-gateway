@@ -170,6 +170,27 @@ resource "google_compute_network_firewall_policy_rule" "allow_iap_ssh" {
   }
 }
 
+# Create Ingress Firewall Rule allowing Traffic from Proxy-Only Subnets to GKE Nodes
+resource "google_compute_network_firewall_policy_rule" "allow_proxy_ingress" {
+  project         = var.host_project_id
+  firewall_policy = google_compute_network_firewall_policy.iap_policy.name
+
+  description = "Allow ingress from proxy-only subnets to GKE nodes"
+  priority    = 1010
+  action      = "allow"
+  direction   = "INGRESS"
+
+  match {
+    src_ip_ranges = [
+      "10.129.0.0/23", # us-central1 proxy-only subnet
+      "10.130.0.0/23"  # us-west1 proxy-only subnet
+    ]
+    layer4_configs {
+      ip_protocol = "tcp"
+    }
+  }
+}
+
 # Associate the Firewall Policy with the VPC Network
 resource "google_compute_network_firewall_policy_association" "iap_policy_association" {
   name              = "shared-vpc-firewall-association"
@@ -182,5 +203,32 @@ resource "google_compute_network_firewall_policy_association" "iap_policy_associ
     google_compute_network_firewall_policy.iap_policy
   ]
 }
+
+# Proxy-Only Subnet for us-central1 (required for cross-region internal load balancer / MCG)
+resource "google_compute_subnetwork" "proxy_subnet_us_central1" {
+  name          = "proxy-subnet-us-central1"
+  project       = var.host_project_id
+  region        = var.region
+  network       = google_compute_network.shared_vpc.self_link
+  ip_cidr_range = "10.129.0.0/23"
+  purpose       = "GLOBAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+
+  depends_on = [google_compute_network.shared_vpc]
+}
+
+# Proxy-Only Subnet for us-west1 (required for cross-region internal load balancer / MCG)
+resource "google_compute_subnetwork" "proxy_subnet_us_west1" {
+  name          = "proxy-subnet-us-west1"
+  project       = var.host_project_id
+  region        = var.region_2
+  network       = google_compute_network.shared_vpc.self_link
+  ip_cidr_range = "10.130.0.0/23"
+  purpose       = "GLOBAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+
+  depends_on = [google_compute_network.shared_vpc]
+}
+
 
 

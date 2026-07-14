@@ -55,6 +55,18 @@ resource "google_project_iam_member" "gke_host_security_admin" {
   ]
 }
 
+# Grant compute.securityAdmin role to MCS Service Agent on the Host Project
+resource "google_project_iam_member" "mcs_host_security_admin" {
+  project = var.host_project_id
+  role    = "roles/compute.securityAdmin"
+  member  = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com"
+
+  depends_on = [
+    google_project_service.service_container
+  ]
+}
+
+
 # 5. Grant compute.networkUser role to GKE Service Agent on the second Shared VPC Subnet (us-west1)
 resource "google_compute_subnetwork_iam_member" "gke_subnet_2_network_user" {
   project    = var.host_project_id
@@ -146,3 +158,18 @@ resource "google_compute_subnetwork_iam_member" "gkehub_subnet_2_network_user" {
     google_compute_subnetwork.gke_subnet_2
   ]
 }
+
+# Grant compute.networkViewer role to GKE nodes service account on the Host Project
+resource "google_project_iam_member" "gke_nodes_host_network_viewer" {
+  project = var.host_project_id
+  role    = "roles/compute.networkViewer"
+  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
+}
+
+# Grant compute.networkViewer role to GKE Hub Service Agent on the Host Project
+resource "google_project_iam_member" "gkehub_host_network_viewer" {
+  project = var.host_project_id
+  role    = "roles/compute.networkViewer"
+  member  = "serviceAccount:service-${data.google_project.service_project.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
+}
+

@@ -18,6 +18,20 @@ resource "google_project_service" "service_mci" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "service_trafficdirector" {
+  project            = var.service_project_id
+  service            = "trafficdirector.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "service_anthos" {
+  project            = var.service_project_id
+  service            = "anthos.googleapis.com"
+  disable_on_destroy = false
+}
+
+
+
 # Register Primary GKE Cluster to the Fleet (GKE Hub)
 resource "google_gke_hub_membership" "primary_membership" {
   provider      = google-beta
@@ -59,6 +73,7 @@ resource "google_gke_hub_feature" "mcs_feature" {
 
   depends_on = [
     google_project_service.service_mcs,
+    google_project_service.service_trafficdirector,
     google_gke_hub_membership.primary_membership,
     google_gke_hub_membership.secondary_membership
   ]
@@ -73,7 +88,7 @@ resource "google_gke_hub_feature" "mci_feature" {
 
   spec {
     multiclusteringress {
-      config_membership = google_gke_hub_membership.primary_membership.id
+      config_membership = "projects/${data.google_project.service_project.number}/locations/global/memberships/${google_gke_hub_membership.primary_membership.membership_id}"
     }
   }
 
@@ -115,7 +130,8 @@ resource "google_gke_hub_feature_membership" "configsync_primary" {
 
   configmanagement {
     config_sync {
-      enabled = true
+      enabled       = true
+      source_format = "unstructured"
       git {
         sync_repo   = var.gitops_repo_url
         sync_branch = var.gitops_repo_branch
@@ -136,7 +152,8 @@ resource "google_gke_hub_feature_membership" "configsync_secondary" {
 
   configmanagement {
     config_sync {
-      enabled = true
+      enabled       = true
+      source_format = "unstructured"
       git {
         sync_repo   = var.gitops_repo_url
         sync_branch = var.gitops_repo_branch

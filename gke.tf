@@ -58,6 +58,10 @@ resource "google_container_cluster" "primary" {
     workload_pool = "${var.service_project_id}.svc.id.goog"
   }
 
+  gateway_api_config {
+    channel = "CHANNEL_STANDARD"
+  }
+
   # Private Cluster Configuration
   private_cluster_config {
     enable_private_nodes    = true
@@ -140,6 +144,10 @@ resource "google_container_cluster" "secondary" {
 
   workload_identity_config {
     workload_pool = "${var.service_project_id}.svc.id.goog"
+  }
+
+  gateway_api_config {
+    channel = "CHANNEL_STANDARD"
   }
 
   # Private Cluster Configuration
