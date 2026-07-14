@@ -5,7 +5,7 @@ metadata:
   namespace: store
   labels:
     app: store
-    reconcile-trigger: "1"
+    reconcile-trigger: "2"
 spec:
   gatewayClassName: gke-l7-cross-regional-internal-managed-mc
   addresses:
