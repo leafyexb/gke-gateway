@@ -9,7 +9,7 @@ metadata:
   name: store-three
   namespace: store
 spec:
-  replicas: 0
+  replicas: 3
   selector:
     matchLabels:
       app: store
@@ -34,7 +34,7 @@ metadata:
   name: store-one
   namespace: store
 spec:
-  replicas: 3
+  replicas: 0
   selector:
     matchLabels:
       app: store
