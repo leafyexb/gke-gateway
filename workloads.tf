@@ -18,7 +18,8 @@ resource "null_resource" "internal_cross_region_gateway" {
   }
 
   depends_on = [
-    google_container_node_pool.primary_nodes,
+    google_container_node_pool.primary_nodes_a,
+    google_container_node_pool.primary_nodes_b,
     google_gke_hub_feature.mci_feature
   ]
 

@@ -39,7 +39,8 @@ resource "google_gke_hub_membership" "primary_membership" {
   }
   depends_on = [
     google_project_service.service_gkehub,
-    google_container_node_pool.primary_nodes
+    google_container_node_pool.primary_nodes_a,
+    google_container_node_pool.primary_nodes_b
   ]
 }
 

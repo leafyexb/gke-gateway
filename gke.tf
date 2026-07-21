@@ -85,13 +85,14 @@ resource "google_container_cluster" "primary" {
   ]
 }
 
-# Custom Node Pool in the Service Project
-resource "google_container_node_pool" "primary_nodes" {
-  project    = var.service_project_id
-  name       = "primary-node-pool"
-  location   = var.region
-  cluster    = google_container_cluster.primary.name
-  node_count = 2
+# Custom Node Pool A in the Service Project
+resource "google_container_node_pool" "primary_nodes_a" {
+  project        = var.service_project_id
+  name           = "primary-node-pool-a"
+  location       = var.region
+  node_locations = ["us-central1-a"]
+  cluster        = google_container_cluster.primary.name
+  node_count     = 1
 
   management {
     auto_upgrade = true
@@ -115,6 +116,49 @@ resource "google_container_node_pool" "primary_nodes" {
     shielded_instance_config {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
+    }
+
+    labels = {
+      "node-weight-group" = "three-pods"
+    }
+  }
+}
+
+# Custom Node Pool B in the Service Project
+resource "google_container_node_pool" "primary_nodes_b" {
+  project        = var.service_project_id
+  name           = "primary-node-pool-b"
+  location       = var.region
+  node_locations = ["us-central1-a"]
+  cluster        = google_container_cluster.primary.name
+  node_count     = 1
+
+  management {
+    auto_upgrade = true
+    auto_repair  = true
+  }
+
+  node_config {
+    preemptible  = false
+    machine_type = "e2-medium"
+
+    # Dedicated IAM service account with minimal scopes
+    service_account = google_service_account.gke_nodes.email
+    oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
+
+    # Security: Disable legacy metadata endpoints
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+
+    # Security: Shielded Instance Config
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
+    }
+
+    labels = {
+      "node-weight-group" = "one-pod"
     }
   }
 }

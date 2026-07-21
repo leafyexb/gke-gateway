@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: store
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-three
+  namespace: store
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: store
+      group: three
+  template:
+    metadata:
+      labels:
+        app: store
+        group: three
+    spec:
+      nodeSelector:
+        node-weight-group: three-pods
+      containers:
+      - name: hello-app
+        image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-one
+  namespace: store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store
+      group: one
+  template:
+    metadata:
+      labels:
+        app: store
+        group: one
+    spec:
+      nodeSelector:
+        node-weight-group: one-pod
+      containers:
+      - name: hello-app
+        image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-weighted-lb
+  namespace: store
+  annotations:
+    networking.gke.io/weighted-load-balancing: "pods-per-node"
+spec:
+  type: LoadBalancer
+  loadBalancerClass: "networking.gke.io/l4-regional-external"
+  selector:
+    app: store
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
