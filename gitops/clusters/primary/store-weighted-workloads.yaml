@@ -34,7 +34,7 @@ metadata:
   name: store-one
   namespace: store
 spec:
-  replicas: 0
+  replicas: 3
   selector:
     matchLabels:
       app: store
