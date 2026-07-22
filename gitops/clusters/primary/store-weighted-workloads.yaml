@@ -50,8 +50,6 @@ spec:
   type: LoadBalancer
   loadBalancerClass: "networking.gke.io/l4-regional-external"
   externalTrafficPolicy: Local
-  selector:
-    app: store
   ports:
   - protocol: TCP
     port: 80
