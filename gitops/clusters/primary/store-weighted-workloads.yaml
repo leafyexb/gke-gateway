@@ -9,7 +9,7 @@ metadata:
   name: store
   namespace: store
 spec:
-  replicas: 4
+  replicas: 3
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -20,7 +20,7 @@ spec:
         app: store
     spec:
       topologySpreadConstraints:
-      - maxSkew: 2
+      - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
@@ -32,14 +32,9 @@ spec:
         ports:
         - containerPort: 8080
   strategy:
-    canary:
-      steps:
-      - setWeight: 25
-      - pause: {} # Pause indefinitely until promoted
-      - setWeight: 50
-      - pause: {duration: 30s}
-      - setWeight: 75
-      - pause: {duration: 30s}
+    blueGreen:
+      activeService: store-weighted-lb
+      autoPromotionEnabled: false
 ---
 apiVersion: v1
 kind: Service
