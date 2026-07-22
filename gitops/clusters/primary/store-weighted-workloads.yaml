@@ -47,6 +47,7 @@ metadata:
   namespace: store
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
+    configmanagement.gke.io/managed: disabled
 spec:
   type: ClusterIP
   ports:
