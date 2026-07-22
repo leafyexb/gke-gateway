@@ -3,55 +3,43 @@ kind: Namespace
 metadata:
   name: store
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: store-three
+  name: store
   namespace: store
 spec:
-  replicas: 3
+  replicas: 4
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: store
-      group: three
   template:
     metadata:
       labels:
         app: store
-        group: three
     spec:
-      nodeSelector:
-        node-weight-group: three-pods
+      topologySpreadConstraints:
+      - maxSkew: 2
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: store
       containers:
       - name: hello-app
         image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0
         ports:
         - containerPort: 8080
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: store-one
-  namespace: store
-spec:
-  replicas: 0
-  selector:
-    matchLabels:
-      app: store
-      group: one
-  template:
-    metadata:
-      labels:
-        app: store
-        group: one
-    spec:
-      nodeSelector:
-        node-weight-group: one-pod
-      containers:
-      - name: hello-app
-        image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0
-        ports:
-        - containerPort: 8080
+  strategy:
+    canary:
+      steps:
+      - setWeight: 25
+      - pause: {} # Pause indefinitely until promoted
+      - setWeight: 50
+      - pause: {duration: 30s}
+      - setWeight: 75
+      - pause: {duration: 30s}
 ---
 apiVersion: v1
 kind: Service
