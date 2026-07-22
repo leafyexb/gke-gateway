@@ -36,22 +36,26 @@ spec:
           value: "run-6"
   strategy:
     blueGreen:
-      activeService: store-weighted-lb
+      activeService: store
       autoPromotionEnabled: false
       scaleDownDelaySeconds: 120
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: store-weighted-lb
+  name: store
   namespace: store
   annotations:
-    networking.gke.io/weighted-load-balancing: "pods-per-node"
+    cloud.google.com/neg: '{"ingress": true}'
 spec:
-  type: LoadBalancer
-  loadBalancerClass: "networking.gke.io/l4-regional-external"
-  externalTrafficPolicy: Local
+  type: ClusterIP
   ports:
   - protocol: TCP
-    port: 80
+    port: 8080
     targetPort: 8080
+---
+kind: ServiceExport
+apiVersion: net.gke.io/v1
+metadata:
+  name: store
+  namespace: store
