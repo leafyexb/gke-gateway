@@ -31,6 +31,9 @@ spec:
         image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0
         ports:
         - containerPort: 8080
+        env:
+        - name: TEST_UPDATE
+          value: "run-3"
   strategy:
     blueGreen:
       activeService: store-weighted-lb
