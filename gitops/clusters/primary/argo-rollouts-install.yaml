@@ -18371,6 +18371,7 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  namespace: argo-rollouts
   labels:
     app.kubernetes.io/component: rollouts-controller
     app.kubernetes.io/name: argo-rollouts
@@ -18708,6 +18709,7 @@ subjects:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: argo-rollouts
   labels:
     app.kubernetes.io/component: rollouts-controller
     app.kubernetes.io/name: argo-rollouts
@@ -18717,11 +18719,13 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
+  namespace: argo-rollouts
   name: argo-rollouts-notification-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: argo-rollouts
   labels:
     app.kubernetes.io/component: server
     app.kubernetes.io/name: argo-rollouts-metrics
@@ -18739,6 +18743,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: argo-rollouts
   labels:
     app.kubernetes.io/component: rollouts-controller
     app.kubernetes.io/name: argo-rollouts
