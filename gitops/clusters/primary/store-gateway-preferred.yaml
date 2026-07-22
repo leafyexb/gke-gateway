@@ -7,12 +7,7 @@ metadata:
     app: store
     reconcile-trigger: "2"
 spec:
-  gatewayClassName: gke-l7-cross-regional-internal-managed-mc
-  addresses:
-  - type: networking.gke.io/ephemeral-ipv4-address/us-west1
-    value: "us-west1"
-  - type: networking.gke.io/ephemeral-ipv4-address/us-central1
-    value: "us-central1"
+  gatewayClassName: gke-l7-global-external-managed-mc
   listeners:
   - name: http
     protocol: HTTP
