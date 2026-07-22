@@ -33,7 +33,7 @@ spec:
         - containerPort: 8080
         env:
         - name: TEST_UPDATE
-          value: "run-5"
+          value: "run-6"
   strategy:
     blueGreen:
       activeService: store-weighted-lb
