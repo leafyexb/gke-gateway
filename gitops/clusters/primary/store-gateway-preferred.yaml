@@ -5,9 +5,12 @@ metadata:
   namespace: store
   labels:
     app: store
-    reconcile-trigger: "2"
+    reconcile-trigger: "3"
 spec:
-  gatewayClassName: gke-l7-global-external-managed-mc
+  gatewayClassName: gke-l7-regional-external-managed-mc
+  addresses:
+  - type: NamedAddress
+    value: store-regional-gw-ip-central1
   listeners:
   - name: http
     protocol: HTTP

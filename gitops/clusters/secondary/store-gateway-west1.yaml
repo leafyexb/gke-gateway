@@ -1,0 +1,36 @@
+kind: Gateway
+apiVersion: gateway.networking.k8s.io/v1
+metadata:
+  name: store-gateway-west1
+  namespace: store
+  labels:
+    app: store
+spec:
+  gatewayClassName: gke-l7-regional-external-managed
+  addresses:
+  - type: NamedAddress
+    value: store-regional-gw-ip-west1
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      kinds:
+      - kind: HTTPRoute
+---
+kind: HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1
+metadata:
+  name: store-route-west1
+  namespace: store
+  labels:
+    gateway: regional-external
+spec:
+  parentRefs:
+  - kind: Gateway
+    name: store-gateway-west1
+  rules:
+  - backendRefs:
+    - name: store
+      kind: Service
+      port: 8080

@@ -3,14 +3,13 @@ kind: Namespace
 metadata:
   name: store
 ---
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: store
   namespace: store
 spec:
-  replicas: 3
-  revisionHistoryLimit: 3
+  replicas: 2
   selector:
     matchLabels:
       app: store
@@ -19,13 +18,6 @@ spec:
       labels:
         app: store
     spec:
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app: store
       containers:
       - name: hello-app
         image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0
@@ -34,11 +26,6 @@ spec:
         env:
         - name: TEST_UPDATE
           value: "run-8"
-  strategy:
-    blueGreen:
-      activeService: store
-      autoPromotionEnabled: false
-      scaleDownDelaySeconds: 120
 ---
 apiVersion: v1
 kind: Service
@@ -47,9 +34,10 @@ metadata:
   namespace: store
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
-    configmanagement.gke.io/managed: disabled
 spec:
   type: ClusterIP
+  selector:
+    app: store
   ports:
   - protocol: TCP
     port: 8080
